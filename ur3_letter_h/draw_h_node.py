@@ -17,9 +17,6 @@ class UR3eDrawHDirectNode(Node):
     def __init__(self):
         super().__init__('draw_h_node')
 
-        # ============================================================
-        # Publisher điều khiển UR3e
-        # ============================================================
 
         self.traj_pub = self.create_publisher(
             JointTrajectory,
@@ -27,9 +24,7 @@ class UR3eDrawHDirectNode(Node):
             10
         )
 
-        # ============================================================
-        # Publisher Marker cho RViz
-        # ============================================================
+        
 
         self.marker_pub = self.create_publisher(
             Marker,
@@ -37,9 +32,7 @@ class UR3eDrawHDirectNode(Node):
             10
         )
 
-        # ============================================================
-        # Tên các khớp UR3e
-        # ============================================================
+       
 
         self.joint_names = [
             'shoulder_pan_joint',
@@ -50,9 +43,7 @@ class UR3eDrawHDirectNode(Node):
             'wrist_3_joint'
         ]
 
-        # ============================================================
-        # QUỸ ĐẠO ROBOT
-        # ============================================================
+        
 
         self.z_draw = 0.12
         self.z_lift = 0.20
@@ -64,15 +55,11 @@ class UR3eDrawHDirectNode(Node):
         self.y_left = -0.04
         self.y_right = 0.04
 
-        # ============================================================
-        # 12 điểm Cartesian
-        # ============================================================
+        
 
         self.cartesian_points = [
 
-            # --------------------------------------------------------
-            # Nét 1
-            # --------------------------------------------------------
+            
 
             (self.x_start, self.y_left, self.z_lift),
 
@@ -82,9 +69,7 @@ class UR3eDrawHDirectNode(Node):
 
             (self.x_end, self.y_left, self.z_lift),
 
-            # --------------------------------------------------------
-            # Nét 2
-            # --------------------------------------------------------
+          
 
             (self.x_start, self.y_right, self.z_lift),
 
@@ -94,9 +79,7 @@ class UR3eDrawHDirectNode(Node):
 
             (self.x_end, self.y_right, self.z_lift),
 
-            # --------------------------------------------------------
-            # Nét 3
-            # --------------------------------------------------------
+            
 
             (self.x_mid, self.y_left, self.z_lift),
 
@@ -107,9 +90,7 @@ class UR3eDrawHDirectNode(Node):
             (self.x_mid, self.y_right, self.z_lift),
         ]
 
-        # ============================================================
-        # Tính sẵn joint angles cho 12 điểm
-        # ============================================================
+       
 
         self.joint_waypoints = []
 
@@ -119,9 +100,7 @@ class UR3eDrawHDirectNode(Node):
 
             self.joint_waypoints.append(angles)
 
-        # ============================================================
-        # Biến điều khiển từng waypoint
-        # ============================================================
+     
 
         self.current_waypoint = 0
 
@@ -132,24 +111,16 @@ class UR3eDrawHDirectNode(Node):
         # Mỗi điểm robot có khoảng 1.5 giây để di chuyển
         self.move_time = 1.5
 
-        # ============================================================
-        # MARKER
-        # ============================================================
+       
 
-        # Vị trí tool0 thực tế mà mày đo được:
-        #
-        # x = 0.504
-        # y = 0.107
-        # z = 0.130
-        #
-        # Marker được đặt gần vị trí này.
+     
 
         self.marker_center_x = 0.504
         self.marker_center_y = 0.107
 
         self.marker_z = 0.050
 
-        # H lớn hơn bản cũ
+        
 
         self.marker_half_width = 0.125
         self.marker_half_height = 0.080
@@ -176,9 +147,7 @@ class UR3eDrawHDirectNode(Node):
             + self.marker_half_height
         )
 
-        # ============================================================
-        # Chờ 10 giây
-        # ============================================================
+      
 
         self.get_logger().info(
             "=== CHỜ 10 GIÂY ĐỂ BẮT ĐẦU ==="
@@ -189,9 +158,7 @@ class UR3eDrawHDirectNode(Node):
             self.start_drawing
         )
 
-    # =================================================================
-    # IK
-    # =================================================================
+    
 
     def ur3e_ik(self, x, y, z):
 
@@ -257,9 +224,6 @@ class UR3eDrawHDirectNode(Node):
             theta6
         ]
 
-    # =================================================================
-    # BẮT ĐẦU
-    # =================================================================
 
     def start_drawing(self):
 
@@ -286,9 +250,6 @@ class UR3eDrawHDirectNode(Node):
             self.next_waypoint
         )
 
-    # =================================================================
-    # GỬI MỘT WAYPOINT
-    # =================================================================
 
     def send_current_waypoint(self):
 
@@ -336,9 +297,7 @@ class UR3eDrawHDirectNode(Node):
             )
         )
 
-    # =================================================================
-    # CHUYỂN SANG WAYPOINT TIẾP THEO
-    # =================================================================
+  
 
     def next_waypoint(self):
 
@@ -347,9 +306,7 @@ class UR3eDrawHDirectNode(Node):
 
         self.current_waypoint += 1
 
-        # ============================================================
-        # Nếu đã hết waypoint
-        # ============================================================
+        
 
         if self.current_waypoint >= len(
             self.joint_waypoints
@@ -366,15 +323,10 @@ class UR3eDrawHDirectNode(Node):
 
             return
 
-        # ============================================================
-        # Gửi waypoint tiếp theo
-        # ============================================================
+        
 
         self.send_current_waypoint()
 
-    # =================================================================
-    # TẠO MARKER
-    # =================================================================
 
     def create_marker(self):
 
@@ -403,17 +355,12 @@ class UR3eDrawHDirectNode(Node):
 
         return marker
 
-    # =================================================================
-    # HIỂN THỊ MARKER
-    # =================================================================
+  
 
     def publish_marker(self):
 
         marker = self.create_marker()
 
-        # ============================================================
-        # Nét 1
-        # ============================================================
 
         if self.current_waypoint >= 2:
 
@@ -433,9 +380,7 @@ class UR3eDrawHDirectNode(Node):
                 )
             )
 
-        # ============================================================
-        # Nét 2
-        # ============================================================
+        
 
         if self.current_waypoint >= 6:
 
@@ -455,9 +400,7 @@ class UR3eDrawHDirectNode(Node):
                 )
             )
 
-        # ============================================================
-        # Nét 3
-        # ============================================================
+       
 
         if self.current_waypoint >= 10:
 
@@ -480,9 +423,7 @@ class UR3eDrawHDirectNode(Node):
         self.marker_pub.publish(marker)
 
 
-# =====================================================================
-# MAIN
-# =====================================================================
+
 
 def main(args=None):
 
